@@ -3,17 +3,23 @@ enum ActionType {
     DELETE_TODO = "DELETE_TODO",
 }
 
-interface Action {
-    type: ActionType;
-    text: string
+interface Todo {
+    id: number;      // 고유 ID
+    text: string;    // 투두 텍스트
 }
 
-const todos = (state = [], action: Action, )=>{
+interface Action {
+    type: ActionType;
+    todo?: Todo;     // 추가할 투두
+    id?: number;     // 삭제할 투두 ID
+}
+
+const todos = (state: Todo[] = [], action: Action)=>{
     switch(action.type) {
         case "ADD_TODO":
-            return [...state, action.text]
+            return [...state, action.todo!]
         case "DELETE_TODO":
-            return state.filter(todo => todo !== action.text);
+            return state.filter(todo => todo.id !== action.id);
         default:
             return state;
     }

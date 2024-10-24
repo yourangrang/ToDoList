@@ -3,48 +3,52 @@ import './App.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from './reducers';
 
-
-
-type Props = {
-  value: any;
-  onIncrement: () => void;
-  onDecrement: () => void;
+interface Todo {
+  id: number;      // 고유 ID
+  text: string;    // 투두 텍스트
 }
 
-function App({ value, onIncrement, onDecrement }:Props) { 
+function App() { 
   const dispatch = useDispatch();
-  const counter = useSelector((state: RootState)=> state.counter);
-  const todos: string[] = useSelector((state: RootState)=> state.todos);
-
+  const todos: Todo[] = useSelector((state: RootState) => state.todos);
   const [ todoValue, setTodoValue ] = useState("");
+
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>{
     setTodoValue(e.target.value);
   }
   const addTodo = (e: React.FormEvent<HTMLFormElement>) =>{
     e.preventDefault();
-    dispatch({ type: "ADD_TODO", text: todoValue });
+    const newTodo: Todo = { id: Date.now(), text: todoValue};
+    dispatch({ type: "ADD_TODO", todo: newTodo });
     setTodoValue("");
   }
-
+  const deleteTodo = (id : number) => {
+    dispatch({ type: "DELETE_TODO", id });
+  }
 
   return (
     <div className="App">
-        Clicked:{counter} times
-        <button onClick={onIncrement}> 
-          +
-        </button>
-        <button onClick={onDecrement}> 
-          -
-        </button>
-
+        
+        <h2>To Do List</h2>
         <ul>
-          todo list
-          {todos.map((todo, key)=><li key={key}>{todo}</li>)}
+          {todos.map(todo =>(
+          <li key={todo.id}>
+            {todo.text}
+            <button onClick={() => deleteTodo(todo.id)}>X</button>
+          </li>
+        ))}
         </ul>
 
         <form onSubmit={addTodo}>
-          <input type="text" value={todoValue} onChange={handleChange} />
-          <input type="submit" />
+          <input
+            className='todoinput'
+            type="text"
+            value={todoValue}
+            onChange={handleChange}
+            placeholder="  할 일을 입력해 주세요"
+          />
+          <input className='submitinput' type="submit" value={"추가"} />
         </form>
     </div>
   );  
